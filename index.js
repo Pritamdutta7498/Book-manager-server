@@ -37,7 +37,14 @@ async function run() {
         const result = await bookCollection.insertOne(data);
         res.send(result)
     });
-    
+
+    // get data from collection
+    app.get('/all-books', async(req, res) => {
+      const books = bookCollection.find();
+      const result = await books.toArray();
+      res.send(result);
+      
+    })
 
 
 
