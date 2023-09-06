@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const port = process.env.PORT || 5000;
 
@@ -31,30 +31,37 @@ async function run() {
     const bookCollection = client.db("bookManager").collection("books");
 
     // inserting data
-    app.post('/upload-book', async(req, res) => {
-        const data = req.body;
-        console.log(data);
-        const result = await bookCollection.insertOne(data);
-        res.send(result)
+    app.post("/upload-book", async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await bookCollection.insertOne(data);
+      res.send(result);
     });
 
     // get data from collection
-    app.get('/all-books', async(req, res) => {
+    app.get("/all-books", async (req, res) => {
       const books = bookCollection.find();
       const result = await books.toArray();
       res.send(result);
-      
-    })
+    });
 
+    // update data
+    app.patch("/book/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const updatedBookData = req.body;
+      // console.log(updatedBookData);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          ...updatedBookData,
+        },
+      };
+      const result = await bookCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
-
-
-
-
-
-
-
-
+    
 
     await client.db("admin").command({ ping: 1 });
     console.log(
