@@ -27,7 +27,16 @@ async function run() {
   try {
     await client.connect();
 
-   
+    // create a collection---
+    const bookCollection = client.db("bookManager").collection("books");
+
+    // inserting data
+    app.post('/upload-book', async(req, res) => {
+        const data = req.body;
+        console.log(data);
+        const result = await bookCollection.insertOne(data);
+        res.send(result)
+    });
     
 
 
