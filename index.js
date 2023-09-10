@@ -44,13 +44,23 @@ async function run() {
       const result = await books.toArray();
       res.send(result);
     });
+    //
+    // app.get("/coffee", async (req, res) => {
+    //   const cursor = coffeeCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+    app.get("/all-books/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookCollection.findOne(query);
+      res.send(result);
+    });
 
     // update data
     app.patch("/book/:id", async (req, res) => {
       const id = req.params.id;
-      // console.log(id);
       const updatedBookData = req.body;
-      // console.log(updatedBookData);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -61,7 +71,16 @@ async function run() {
       res.send(result);
     });
 
-    
+    // delete data from collection
+    app.delete("/book/:id", async (req,res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+
+      const result = await bookCollection.deleteOne(filter);
+      res.send(result);
+    });
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
